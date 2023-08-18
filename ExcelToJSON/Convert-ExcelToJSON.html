@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Excel to JSON Conversion</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .file-upload {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            transition: border-color 0.3s;
+        }
+        .file-upload:hover {
+            border-color: #999;
+        }
+        #convertBtn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #convertBtn:hover {
+            background-color: #0056b3;
+        }
+        #jsonOutput {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: left;
+            white-space: pre-wrap;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Convert Excel to JSON</h1>
+        <label for="excelFile" class="file-upload">
+            <input type="file" id="excelFile" accept=".xlsx, .xls">
+            Click to Upload Excel File
+        </label>
+        <button id="convertBtn">Convert</button>
+        <pre id="jsonOutput"></pre>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $("#convertBtn").click(function() {
+                var excelFile = document.getElementById("excelFile").files[0];
+                if (excelFile) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var data = new Uint8Array(e.target.result);
+                        var workbook = XLSX.read(data, { type: 'array' });
+
+                        var sheetName = workbook.SheetNames[0];
+                        var worksheet = workbook.Sheets[sheetName];
+
+                        var jsonData = XLSX.utils.sheet_to_json(worksheet);
+                        var jsonOutput = JSON.stringify(jsonData, null, 2);
+
+                        $("#jsonOutput").text(jsonOutput);
+                    };
+                    reader.readAsArrayBuffer(excelFile);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
